@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon backend/app.js"
+"start": "node backend/app.js"
   },
   "dependencies": {
     "concurrently": "^9.2.0",
