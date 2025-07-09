@@ -247,13 +247,10 @@ const Login = require("../model/login");
 const sendMail = require("../utils/sendMail");
 
 const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com", "protonmail.com"];
-
-// ✅ GET route to check server health
 router.get("/", (req, res) => {
   res.send("🔐 Login route is active and reachable via POST method!");
 });
 
-// ✅ POST route for login/signup
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
@@ -275,12 +272,18 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    // 🔐 Always create user (will create duplicates - for debug only)
-    const role = email === "variyajanvii2024.katargam@gmail.com" ? "admin" : "user";
-    const newUser = new Login({ email, password, role });
+    // 🔍 Check if user exists
+    let user = await Login.findOne({ email });
 
-    const savedUser = await newUser.save();
-    console.log("✅ Saved new user:", savedUser);
+    if (!user) {
+      // 🔐 Create user if not exists
+      const role = email === "variyajanvii2024.katargam@gmail.com" ? "admin" : "user";
+      user = new Login({ email, password, role });
+      await user.save();
+      console.log("✅ New user saved:", user);
+    } else {
+      console.log("👤 Existing user logged in:", user.email);
+    }
 
     await sendMail(
       email,
@@ -297,7 +300,7 @@ router.post("/", async (req, res) => {
     console.error("⚠️ Login Error:", err);
     res.status(500).json({
       success: false,
-      message: "⚠️ Server error. Please try again later.",
+      message: " Server error",
     });
   }
 });
